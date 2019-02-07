@@ -5,6 +5,8 @@
 #' @param filename path to file
 #' @param date_format date format
 #' @param time_format time format
+#' @param log should log which file is read?
+#' @param info show additional info about file
 #'
 #' @return a xts
 #' @export
@@ -12,8 +14,16 @@
 #' @examples
 #' read_ohlc("ohlc.csv")
 read_ohlcv <- function(filename,
-                       date_format = "%Y-%m-%d",
-                       time_format = "%H:%M") {
+                       date_format = c("%Y-%m-%d", "%Y.%m.%d"),
+                       time_format = "%H:%M",
+                       log = FALSE,
+                       info = FALSE) {
+  if (log) {
+    message(paste0("Reading OHLCV from ", filename))
+  }
+
+  loginf <- log && info
+
   # Check if headers are present
   first <- data.table::fread(filename, header = FALSE, nrows = 1)
   if (is.character(first$V3)) {
@@ -21,19 +31,32 @@ read_ohlcv <- function(filename,
   } else {
     skip <- 0
   }
+
+  if (loginf && skip > 0) {
+    message("Headers found")
+  }
+
   dt <- data.table::fread(filename, header = FALSE, skip = skip)
+  datetime_format <- expand.grid(date_format, time_format) %>% tidyr::unite("f", sep = " ")
 
   if (is.character(dt$V2)) {
     # Has time column
-    datetime_format <- paste0(date_format, " ", time_format)
-    dt[, V1 := as.POSIXct(paste(V1, V2), format = datetime_format, tz = "UTC")]
+    dt[, V1 := as.POSIXct(paste(V1, V2), tryFormats = datetime_format[, 1], tz = "UTC")]
     dt[, V2 := NULL]
+    if (loginf) {
+      message("Has time column")
+    }
   } else {
-    dt[, V1 := as.POSIXct(V1, format = date_format, tz = "UTC")]
+    dt[, V1 := as.POSIXct(V1, tryFormats = date_format, tz = "UTC")]
   }
 
   x <- data.table::as.xts.data.table(dt)
   colnames(x) <- c("Open", "High", "Low", "Close", "Volume")
+
+  if (loginf) {
+    message(format(xts::periodicity(x)))
+  }
+
   x
 }
 

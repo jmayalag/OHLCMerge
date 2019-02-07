@@ -4,8 +4,8 @@
 \alias{read_ohlcv}
 \title{Read OHLCV csv}
 \usage{
-read_ohlcv(filename, date_format = "\%Y-\%m-\%d",
-  time_format = "\%H:\%M")
+read_ohlcv(filename, date_format = c("\%Y-\%m-\%d", "\%Y.\%m.\%d"),
+  time_format = "\%H:\%M", log = FALSE, info = FALSE)
 }
 \arguments{
 \item{filename}{path to file}
@@ -13,6 +13,10 @@ read_ohlcv(filename, date_format = "\%Y-\%m-\%d",
 \item{date_format}{date format}
 
 \item{time_format}{time format}
+
+\item{log}{should log which file is read?}
+
+\item{info}{show additional info about file}
 }
 \value{
 a xts
