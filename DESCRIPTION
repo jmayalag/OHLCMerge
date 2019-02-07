@@ -1,0 +1,21 @@
+Package: OHLCMerge
+Title: Merge multiple files
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Jordan",
+           family = "Ayala",
+           role = c("aut", "cre"),
+           email = "jor.ayalag@gmail.com")
+Description: Merge multiple OHLC files into one.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Depends: 
+    R (>= 3.1.2)
+Imports: 
+    data.table,
+    dplyr,
+    tidyr,
+    xts
+RoxygenNote: 6.1.1
+Roxygen: list(markdown = TRUE, roclets = c("rd", "namespace", "collate"))
