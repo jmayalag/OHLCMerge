@@ -30,6 +30,11 @@ merge_group <- function(group, group_name, save_dir = ".", verify = FALSE, ...) 
     function(all, file) {
       current <- read_ohlcv(file, ...)
       periodicity <- periodicity_df(current)
+      compat <- compatible_periodicity(group_periodicity, periodicity)
+      if (!compat) {
+        stop(paste(file, "has different periodicity: ", periodicity," \n Expected: ", group_periodicity))
+      }
+
 
       combine_xts(all, current, update = TRUE)
     },
