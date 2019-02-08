@@ -1,8 +1,8 @@
 library(OHLCMerge)
 library(dplyr)
+library(tidyr)
 
-
-merge_group <- function(files, group_name, save_dir = ".", verify = FALSE, ...) {
+merge_group <- function(files, group_name, save_dir = ".", verify = FALSE, verbose = FALSE, ...) {
   if (!dir.exists(save_dir)) {
     dir.create(save_dir, recursive = TRUE)
   }
@@ -18,11 +18,11 @@ merge_group <- function(files, group_name, save_dir = ".", verify = FALSE, ...) 
       periodicity <- periodicity_df(current)
       compat <- compatible_periodicity(group_periodicity, periodicity)
       if (!compat) {
-        stop(paste(file, "has different periodicity: ", periodicity," \n Expected: ", group_periodicity))
+        stop(paste(file, "has different periodicity: ", periodicity, " \n Expected: ", group_periodicity))
       }
 
 
-      combine_xts(all, current, update = TRUE)
+      combine_xts(all, current, update = TRUE, verbose = verbose)
     },
     files[-1],
     first
@@ -31,7 +31,7 @@ merge_group <- function(files, group_name, save_dir = ".", verify = FALSE, ...) 
   filename <- paste0(group_name, ".csv")
   path <- file.path(save_dir, filename)
   export_csv(all, path)
-  message(paste0("Saved '", group_name, "' in", path))
+  message(paste0("Saved '", group_name, "' in ", path))
   tibble(
     file = filename,
     abspath = path,
@@ -59,12 +59,14 @@ grouped <- files_tb %>%
 
 merged <- grouped %>%
   do(merge_group(.$abspath,
-                 .$dataset[1],
-                 save_dir=save_dir,
-                 log=T, info=F)
-  )
+    .$dataset[1],
+    save_dir = save_dir,
+    log = F, info = F, verbose = T
+  ))
 
-summary <- merged %>% select(dataset, files_merged, observations, periodicity, p) %>% unnest(p)
+suppressWarnings(summary <- merged %>%
+  select(dataset, files_merged, observations, periodicity, p) %>%
+  unnest(p))
 
 print(summary)
 
