@@ -1,3 +1,34 @@
+#' Check if two periodicities are compatible
+#'
+#' @param first periodicity data.frame
+#' @param second other periodicity data.frame
+#'
+#' @return TRUE if compatible, FALSE otherwise
+#' @export
+#'
+#' @examples
+#' compatible_periodicty(a, b)
+compatible_periodicity <- function(first, second) {
+  cols <- c("difftime", "frequency", "units", "scale", "label")
+  equal <- first == second
+  compatible <- all(equal[, cols])
+
+  compatible
+}
+
+#' Get periodicity in data.frame
+#'
+#' @param x a xts object
+#'
+#' @return data.frame with periodicity
+#' @export
+#'
+#' @examples
+#' periodicity_df(AAPL)
+periodicity_df <- function(x) {
+  xts::periodicity(x) %>% do.call(data.frame, .)
+}
+
 #' Set difference between POSIXct
 #'
 #' @param first a POSIXct vector
@@ -50,7 +81,7 @@ intersect.POSIXct <- function(first, second) {
 #' a <- index(AAPL[1:3, ])
 #' b <- index(AAPL[3:5, ])
 #' combine_xts(a, b)
-combine_xts <- function(first, second, verbose=FALSE, update=FALSE) {
+combine_xts <- function(first, second, verbose = FALSE, update = FALSE) {
   f <- index(first)
   s <- index(second)
 
@@ -91,4 +122,36 @@ to_dataframe <- function(data, date_format = "%Y-%m-%d", time_format = "%H:%M:%S
   date <- strftime(index, date_format)
   time <- strftime(index, time_format)
   data.frame(Date = date, Time = time, df)
+}
+
+#' Returns a formatted string of periodicity
+#'
+#' @param x periodicity object
+#' @param ... additional arguments
+#'
+#' @return a character vector
+#' @export
+#'
+#' @examples
+#' print(format_periodicity(x))
+format_periodicity <- function(x, ...) {
+  x.freq <- ifelse(x$scale %in% c("minute", "seconds"), x$frequency,
+    ""
+  )
+  if (x.freq == "") {
+    cap.scale <- paste(toupper(substring(x$scale, 1, 1)),
+      substring(x$scale, 2),
+      sep = ""
+    )
+    return(paste(cap.scale, "periodicity from", x$start, "to",
+      x$end,
+      sep = " "
+    ))
+  }
+  else {
+    return(paste(x.freq, x$scale, "periodicity from", x$start,
+      "to", x$end,
+      sep = " "
+    ))
+  }
 }

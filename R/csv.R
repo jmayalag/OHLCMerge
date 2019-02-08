@@ -54,7 +54,7 @@ read_ohlcv <- function(filename,
   colnames(x) <- c("Open", "High", "Low", "Close", "Volume")
 
   if (loginf) {
-    message(format(xts::periodicity(x)))
+    message(format_periodicity(xts::periodicity(x)))
   }
 
   x
@@ -71,8 +71,10 @@ read_ohlcv <- function(filename,
 #' @examples
 #' export_csv(DJI)
 export_csv <- function(data, file) {
-  df <- to_dataframe(data)
-  write.csv(df, file, row.names = FALSE, quote = FALSE)
+  if (xts::is.xts(data)) {
+    data <- to_dataframe(data)
+  }
+  write.csv(data, file, row.names = FALSE, quote = FALSE)
 }
 
 #' Obtiene un dataset del formato csv

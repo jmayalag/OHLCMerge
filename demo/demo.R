@@ -1,25 +1,11 @@
 library(OHLCMerge)
 library(dplyr)
 
-periodicity_df <- function(df) {
-  p <- xts::periodicity(df) %>% do.call(data.frame, .)
-  p
-}
 
-compatible_periodicity <- function(first, second) {
-  cols <- c("difftime", "frequency", "units", "scale", "label")
-  equal <- first == second
-  compatible <- all(equal[, cols])
-
-  compatible
-}
-
-merge_group <- function(group, group_name, save_dir = ".", verify = FALSE, ...) {
+merge_group <- function(files, group_name, save_dir = ".", verify = FALSE, ...) {
   if (!dir.exists(save_dir)) {
     dir.create(save_dir, recursive = TRUE)
   }
-
-  files <- group$abspath
 
   first <- read_ohlcv(files[1], ...)
 
@@ -42,10 +28,19 @@ merge_group <- function(group, group_name, save_dir = ".", verify = FALSE, ...) 
     first
   )
 
-  path <- file.path(save_dir, paste0(group_name, ".csv"))
+  filename <- paste0(group_name, ".csv")
+  path <- file.path(save_dir, filename)
   export_csv(all, path)
-  message(paste("Saved '", group_name, "' in", path))
-  group
+  message(paste0("Saved '", group_name, "' in", path))
+  tibble(
+    file = filename,
+    abspath = path,
+    periodicity = format_periodicity(xts::periodicity(all)),
+    observations = nrow(all),
+    files_merged = length(files),
+    p = list(periodicity_df(all)),
+    xts = list(all)
+  )
 }
 
 dirpath <- "E:/Jordan/Downloads/datos_ig"
@@ -62,9 +57,15 @@ files_tb <- as_tibble(files_split) %>% mutate(abspath = file.path(dirpath, file)
 grouped <- files_tb %>%
   group_by(dataset)
 
-grouped %>%
-  do(merge_group(.,
+merged <- grouped %>%
+  do(merge_group(.$abspath,
                  .$dataset[1],
                  save_dir=save_dir,
-                 log=T)
-     )
+                 log=T, info=F)
+  )
+
+summary <- merged %>% select(dataset, files_merged, observations, periodicity, p) %>% unnest(p)
+
+print(summary)
+
+export_csv(summary, file.path(save_dir, "summary.csv"))
