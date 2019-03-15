@@ -11,7 +11,6 @@ merge_group <- function(files, group_name, save_dir = ".", verify = FALSE, verbo
 
   group_periodicity <- periodicity_df(first)
 
-
   all <- Reduce(
     function(all, file) {
       current <- read_ohlcv(file, ...)
@@ -34,7 +33,7 @@ merge_group <- function(files, group_name, save_dir = ".", verify = FALSE, verbo
   message(paste0("Saved '", group_name, "' in ", path))
   tibble(
     file = filename,
-    abspath = path,
+    filepath = path,
     periodicity = format_periodicity(xts::periodicity(all)),
     observations = nrow(all),
     files_merged = length(files),
@@ -43,31 +42,80 @@ merge_group <- function(files, group_name, save_dir = ".", verify = FALSE, verbo
   )
 }
 
-dirpath <- "E:/Jordan/Downloads/datos_ig"
-save_dir <- file.path(dirpath, "merged")
+#' Agrupa multiples datasets de acuerdo al nombre del archivo.
+#' Ejemplo: AAPL_1.csv, AAPL_2.csv, AAPL_3.csv agrupa a AAPL.csv
+#'
+#' @param files filepath de archivos
+#'
+#' @return tabla agrupada de datasets
+#' @export
+#'
+#' @examples
+#' auto_group_files(c("AAPL_1.csv", "AAPL_2.csv", "AMZN_1.csv", "AMZN_2.csv"))
+auto_group_files <- function(files) {
+  names <- basename(files)
+  files_split <- stringr::str_match(names, "^(.*)_.*")
 
-files <- dir(dirpath, pattern = "*.csv")
+  colnames(files_split) <- c("file", "dataset")
 
-files_split <- stringr::str_match(files, "^(.*)_.*")
+  files_tb <- as_tibble(files_split) %>%
+    mutate(filepath = files) %>%
+    drop_na()
 
-colnames(files_split) <- c("file", "dataset")
+  grouped <- files_tb %>%
+    group_by(dataset)
 
-files_tb <- as_tibble(files_split) %>% mutate(abspath = file.path(dirpath, file))
+  grouped
+}
 
-grouped <- files_tb %>%
-  group_by(dataset)
+#' Agrupa archivos sin tener en cuenta el formato del nombre de archivo.
+#' Debe asegurarse que los archivos esten en el orden correcto, de lo contrario el
+#' resultado no estara ordenado por fecha.
+#'
+#' Los archivos deben tener periodicidades iguales para poder ser mezclados.
+#'
+#' @param files filepath de archivos
+#' @param name nombre del dataset final
+#'
+#' @return tabla agrupada de los archivos
+#' @export
+#'
+#' @examples
+#' group_files(c("PreciosApple2016.csv", "AAPL2017.csv", "StockApple2018.csv"), "AAPL")
+group_files <- function(files, name) {
+  tibble(file = basename(files), dataset = name, filepath = files) %>%
+    group_by(dataset)
+}
 
-merged <- grouped %>%
-  do(merge_group(.$abspath,
-    .$dataset[1],
-    save_dir = save_dir,
-    log = F, info = F, verbose = T
-  ))
+merge_files_by_group <- function(grouped, save_dir, save_summary = FALSE) {
+  merged <- grouped %>%
+    do(merge_group(.$filepath,
+      .$dataset[1],
+      save_dir = save_dir,
+      log = F, info = F, verbose = T
+    ))
 
-suppressWarnings(summary <- merged %>%
-  select(dataset, files_merged, observations, periodicity, p) %>%
-  unnest(p))
+  suppressWarnings(summary <- merged %>%
+    select(dataset, files_merged, observations, periodicity, p) %>%
+    unnest(p))
+
+  if (save_summary) {
+    export_csv(summary, file.path(save_dir, "summary.csv"))
+  }
+
+
+  summary
+}
+
+dirpath <- "~/Google Drive/py_stock_market_prediction/datos/datasets_paper1"
+save_dir <- file.path("~/Downloads/datasets_paper1")
+
+files <- dir(dirpath, pattern = "*.csv", full.names = TRUE)
+
+grouped <- auto_group_files(files)
+
+summary <- merge_files_by_group(grouped, save_dir)
 
 print(summary)
 
-export_csv(summary, file.path(save_dir, "summary.csv"))
+group_files(c("AAPL.csv", "Apple2018.csv", "Apple 2019.csv"), "AAPL")
