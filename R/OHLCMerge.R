@@ -4,4 +4,5 @@
 #' @importFrom xts xts lag.xts
 #' @importFrom data.table :=
 #' @importFrom zoo index
+#' @importFrom magrittr %>%
 "_PACKAGE"

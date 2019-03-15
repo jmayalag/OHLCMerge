@@ -1,13 +1,43 @@
 context("Test xts utils")
 
-test_that("combine_xts should combine two xts", {
+test_that("combine_xts should combine two xts with overlap", {
   require(xts)
 
   data(sample_matrix)
-  a <- head(as.xts(sample_matrix))
-  b <- head(as.xts(sample_matrix), 30)
-  b[5:10, ] <- b[5:10, ] * 2
+  x <- as.xts(sample_matrix)
+
+  a <- head(x, 10)
+  b <- head(x, 5) * 2
+
+  expected <- head(x, 10)
+  comb <- combine_xts(a, b)
+  expect_equal(comb, expected)
+})
+
+test_that("combine_xts should combine two xts with overlap, updating values", {
+  require(xts)
+
+  data(sample_matrix)
+  x <- as.xts(sample_matrix)
+
+  a <- head(x, 10)
+  b <- head(x, 10) * 2
+
+  expected <- head(x, 10) * 2
+  comb <- combine_xts(a, b, update = TRUE)
+  expect_equal(comb, expected)
+})
+
+
+test_that("combine_xts should combine two xts without overlap", {
+  require(xts)
+
+  data(sample_matrix)
+  x <- as.xts(sample_matrix)
+  a <- head(x, 10)
+  b <- tail(x, 10)
 
   comb <- combine_xts(a, b)
-  expect_equal(round(sum(comb$Close)), 1707)
+  expected <- c(head(x, 10), tail(x, 10))
+  expect_equal(comb, expected)
 })

@@ -91,19 +91,21 @@ combine_xts <- function(first, second, verbose = FALSE, update = FALSE) {
   common <- intersect.POSIXct(f, s)
   z <- first[common, ]
 
-  diff <- first - second
-  diff_index <- which(rowSums(diff != 0) != 0)
-  diff_rows <- diff[diff_index]
+  if (length(common) != 0) {
+    diff <- first - second
+    diff_index <- which(rowSums(diff != 0) != 0)
+    diff_rows <- diff[diff_index]
 
-  if (length(diff_rows) > 0) {
-    if (verbose) {
-      message("Duplicate indices with different values")
-      print(diff_rows)
+    if (length(diff_rows) > 0) {
+      if (verbose) {
+        message("Duplicate indices with different values")
+        print(diff_rows)
+      }
     }
-  }
 
-  if (update) {
-    z <- second[common, ]
+    if (update) {
+      z <- second[common, ]
+    }
   }
 
   rbind(x, y, z)

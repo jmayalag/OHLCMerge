@@ -16,7 +16,8 @@ Imports:
     data.table,
     dplyr,
     tidyr,
-    xts
+    xts,
+    argparse
 RoxygenNote: 6.1.1
 Roxygen: list(markdown = TRUE, roclets = c("rd", "namespace", "collate"))
 Suggests: 

@@ -1,3 +1,18 @@
+#' Validacion basica de csv
+#' Si tiene header, debe tener dos filas
+#' Si no tiene header, debe tener por lo menos una fila
+#'
+#' @param filename nombre de archivo
+#'
+#' @return TRUE si es valido, de lo contrario FALSE
+valid_csv <- function(filename) {
+  df <- read.csv(filename, nrows = 3, header = FALSE, stringsAsFactors = FALSE)
+  has_header <- is.character(df$V3)
+  valid <- (has_header && nrow(df) == 3) || (!has_header && nrow(df) >= 2)
+
+  valid
+}
+
 #' Read OHLCV csv
 #'
 #' First column must be the date, and the second must be the time component (optional)
