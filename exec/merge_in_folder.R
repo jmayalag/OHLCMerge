@@ -28,6 +28,15 @@ parser$add_argument("-v", "--verbose",
   action = "store_true"
 )
 
+args <- commandArgs(trailingOnly = TRUE)
+
+tryCatch({
+  args <- parser$parse_args(args)
+}, error = function(err) {
+  parser$print_usage()
+  quit()
+})
+
 library(OHLCMerge)
 
 files <- dir(args$dirs, pattern = "*.csv", full.names = TRUE, recursive = args$recursive)
