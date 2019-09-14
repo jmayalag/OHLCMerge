@@ -26,7 +26,8 @@ compatible_periodicity <- function(first, second) {
 #' @examples
 #' periodicity_df(AAPL)
 periodicity_df <- function(x) {
-  xts::periodicity(x) %>% do.call(data.frame, .)
+  p <- xts::periodicity(x)
+  do.call(data.frame, c(p, stringsAsFactors = F))
 }
 
 #' Set difference between POSIXct
@@ -122,11 +123,11 @@ combine_xts <- function(first, second, verbose = FALSE, update = FALSE) {
 #' @examples
 #' to_dataframe(DJI)
 to_dataframe <- function(data, date_format = "%Y-%m-%d", time_format = "%H:%M:%S") {
-  df <- data.frame(coredata(data))
+  df <- data.frame(coredata(data), stringsAsFactors = F)
   index <- index(data)
   date <- strftime(index, date_format)
   time <- strftime(index, time_format)
-  data.frame(Date = date, Time = time, df)
+  data.frame(Date = date, Time = time, df, stringsAsFactors = F)
 }
 
 #' Returns a formatted string of periodicity
