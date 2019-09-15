@@ -38,7 +38,8 @@ merge_group <- function(files, group_name, save_dir = ".", verbose = FALSE, ...)
       periodicity <- periodicity_df(head(current))
       compat <- compatible_periodicity(group_periodicity, periodicity)
       if (!compat) {
-        message(paste0("\n",
+        message(paste0(
+          "\n",
           basename(file), " has different periodicity:\n",
           format_periodicity(periodicity),
           "\nExpected: ", format_periodicity(group_periodicity), "\n"
@@ -117,6 +118,7 @@ group_files <- function(files, name) {
 #' @param log mostrar logs
 #' @param info mostrar mensajes de info
 #' @param verbose mostrar todos los mensajes
+#' @param ... argumentos para merge_group
 #'
 #' @return el reporte de los resultados
 #' @export
@@ -124,12 +126,13 @@ group_files <- function(files, name) {
 #' @examples
 #' grouped <- auto_group_files(c("AAPL_1.csv", "AAPL_2.csv"))
 #' merge_files_by_group(grouped, "processed")
-merge_files_by_group <- function(grouped, save_dir, save_summary = FALSE, log = FALSE, info = FALSE, verbose = FALSE) {
+merge_files_by_group <- function(grouped, save_dir, save_summary = FALSE, log = FALSE, info = FALSE, verbose = FALSE, ...) {
   merged <- grouped %>%
     dplyr::do(merge_group(.$filepath,
       .$dataset[1],
       save_dir = save_dir,
-      log = log, info = info, verbose = verbose
+      log = log, info = info, verbose = verbose,
+      ...
     ))
 
   suppressWarnings(summary <- merged %>%

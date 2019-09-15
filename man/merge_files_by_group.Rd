@@ -5,7 +5,7 @@
 \title{Mezcla archivos en cada grupo y guarda el csv final.}
 \usage{
 merge_files_by_group(grouped, save_dir, save_summary = FALSE,
-  log = FALSE, info = FALSE, verbose = FALSE)
+  log = FALSE, info = FALSE, verbose = FALSE, ...)
 }
 \arguments{
 \item{grouped}{tabla agrupada}
@@ -19,6 +19,8 @@ merge_files_by_group(grouped, save_dir, save_summary = FALSE,
 \item{info}{mostrar mensajes de info}
 
 \item{verbose}{mostrar todos los mensajes}
+
+\item{...}{argumentos para merge_group}
 }
 \value{
 el reporte de los resultados
