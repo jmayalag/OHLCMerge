@@ -32,6 +32,10 @@ jobs:
 
 matrix:
   fast_finish: true
+  allow_failures:
+    - r: 3.4
+    - r: 3.3
+    - r: 3.2
   # allow_failures:
   # - env: DEVEL_PACKAGES=true
 
