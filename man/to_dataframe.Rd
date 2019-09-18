@@ -9,6 +9,10 @@ to_dataframe(data, date_format = "\%Y-\%m-\%d",
 }
 \arguments{
 \item{data}{el xts con los datos OHLC}
+
+\item{date_format}{formato para serializar la fecha}
+
+\item{time_format}{formato para serializar el tiempo}
 }
 \value{
 un dataframe con datos OHLC y fecha de trading

@@ -128,6 +128,8 @@ combine_xts <- function(first, second, verbose = FALSE, update = FALSE) {
 #' Convierte un xts a un dataframe
 #'
 #' @param data el xts con los datos OHLC
+#' @param date_format formato para serializar la fecha
+#' @param time_format formato para serializar el tiempo
 #'
 #' @return un dataframe con datos OHLC y fecha de trading
 #' @importFrom zoo index coredata

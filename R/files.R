@@ -79,9 +79,7 @@ merge_group <- function(files, group_name, save_dir = ".", verbose = FALSE, ...)
 #' @export
 #'
 #' @examples
-#' \donttest{
 #' auto_group_files(c("AAPL_1.csv", "AAPL_2.csv", "AMZN_1.csv", "AMZN_2.csv"))
-#' }
 auto_group_files <- function(files) {
   names <- basename(files)
   files_split <- stringr::str_match(names, "^(.*)[_-].*")
@@ -108,9 +106,7 @@ auto_group_files <- function(files) {
 #' @export
 #'
 #' @examples
-#' \donttest{
 #' group_files(c("PreciosApple2016.csv", "AAPL2017.csv", "StockApple2018.csv"), "AAPL")
-#' }
 group_files <- function(files, name) {
   dplyr::tibble(file = basename(files), dataset = name, filepath = files) %>%
     dplyr::group_by(dataset)
