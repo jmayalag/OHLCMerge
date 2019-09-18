@@ -5,4 +5,5 @@
 #' @importFrom data.table :=
 #' @importFrom zoo index
 #' @importFrom magrittr %>%
+#' @importFrom utils head read.csv write.csv
 "_PACKAGE"
