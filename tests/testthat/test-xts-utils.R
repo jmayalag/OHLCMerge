@@ -41,3 +41,24 @@ test_that("combine_xts should combine two xts without overlap", {
   expected <- c(head(x, 10), tail(x, 10))
   expect_equal(comb, expected)
 })
+
+test_that("compatible_periodicity should be true for compatible periodicities", {
+  require(xts)
+
+  data(sample_matrix)
+  x <- as.xts(sample_matrix)
+  a <- periodicity_df(head(x))
+  b <- periodicity_df(tail(x))
+  expect_true(compatible_periodicity(a, b))
+})
+
+test_that("compatible_periodicity should be false for incompatible periodicities", {
+  require(xts)
+
+  data(sample_matrix)
+  x <- as.xts(sample_matrix)
+  a <- periodicity_df(head(x))
+  b <- periodicity_df(tail(x))
+  b$units <- "minutes"
+  expect_false(compatible_periodicity(a, b))
+})

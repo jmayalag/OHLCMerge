@@ -25,5 +25,7 @@ a xts
 First column must be the date, and the second must be the time component (optional)
 }
 \examples{
+\donttest{
 read_ohlc("ohlc.csv")
+}
 }

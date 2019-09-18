@@ -27,7 +27,9 @@ valid_csv <- function(filename) {
 #' @export
 #'
 #' @examples
+#' \donttest{
 #' read_ohlc("ohlc.csv")
+#' }
 read_ohlcv <- function(filename,
                        date_format = c("%Y-%m-%d", "%Y.%m.%d"),
                        time_format = "%H:%M",
@@ -77,14 +79,17 @@ read_ohlcv <- function(filename,
 
 #' Exporta el dataset a un archivo csv
 #'
-#' @param data el dataset
+#' @param data el dataset, puede ser un xts o data.frame
 #' @param file path del archivo a exportar
 #'
 #' @return el archivo csv
 #' @export
 #'
 #' @examples
-#' export_csv(DJI)
+#' require(xts)
+#' data(sample_matrix)
+#' x <- as.xts(sample_matrix)
+#' export_csv(x, "sample.csv")
 export_csv <- function(data, file) {
   if (xts::is.xts(data)) {
     data <- to_dataframe(data)
@@ -96,14 +101,16 @@ export_csv <- function(data, file) {
 #'
 #' @param dataset nombre del dataset
 #' @param datadir directorio en donde se encuentra el dataset
-#' @param recursive buscar recursivamente el dataset dentro del `datadir``
+#' @param recursive buscar recursivamente el dataset dentro del `datadir`
+#' @param verbose muestra mensajes de advertencia si es `TRUE`
 #'
 #' @return el xts con los datos
 #' @export
 #'
 #' @examples
-#' ## Not Run
+#' \donttest{
 #' read_dataset("US30D1", datadir = "~/Downloads/datos_ohlc")
+#' }
 read_dataset <- function(dataset, datadir, recursive = TRUE, verbose = FALSE) {
   extension <- ".csv"
   filename <- paste0(dataset, extension)
@@ -132,8 +139,9 @@ read_dataset <- function(dataset, datadir, recursive = TRUE, verbose = FALSE) {
 #' @export
 #'
 #' @examples
-#' ## Not Run
+#' \donttest{
 #' load_dataset("US30D1", datadir = "~/Downloads/datos_ohlc")
+#' }
 load_dataset <- function(dataset, datadir, envir = .GlobalEnv, recursive = TRUE) {
   data <- read_dataset(dataset, datadir, recursive = recursive)
   assign(dataset, data, envir = envir)

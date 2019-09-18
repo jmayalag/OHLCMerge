@@ -17,5 +17,8 @@ un dataframe con datos OHLC y fecha de trading
 Convierte un xts a un dataframe
 }
 \examples{
-to_dataframe(DJI)
+require(xts)
+data(sample_matrix)
+x <- as.xts(sample_matrix)
+to_dataframe(x)
 }

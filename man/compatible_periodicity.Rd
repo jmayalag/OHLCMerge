@@ -2,7 +2,7 @@
 % Please edit documentation in R/xts_utils.R
 \name{compatible_periodicity}
 \alias{compatible_periodicity}
-\title{Check if two periodicities are compatible}
+\title{Check if two periodicities data.frames are compatible}
 \usage{
 compatible_periodicity(first, second)
 }
@@ -15,8 +15,14 @@ compatible_periodicity(first, second)
 TRUE if compatible, FALSE otherwise
 }
 \description{
-Check if two periodicities are compatible
+Check if two periodicities data.frames are compatible
 }
 \examples{
-compatible_periodicty(a, b)
+require(xts)
+data(sample_matrix)
+x <- as.xts(sample_matrix)
+a <- periodicity_df(head(x))
+b <- periodicity_df(tail(x))
+
+compatible_periodicity(a, b)
 }

@@ -22,6 +22,7 @@ el nombre de la variable a la que se asigno el dataset
 Carga el dataset en el entorno global
 }
 \examples{
-## Not Run
+\donttest{
 load_dataset("US30D1", datadir = "~/Downloads/datos_ohlc")
+}
 }

@@ -9,8 +9,10 @@
 #' @return tabla con el resumen de los archivos guardados
 #'
 #' @examples
+#' \donttest{
 #' files <- dir("data")
 #' merge_group(files, "AAPL", "processed")
+#' }
 merge_group <- function(files, group_name, save_dir = ".", verbose = FALSE, ...) {
   if (!dir.exists(save_dir)) {
     dir.create(save_dir, recursive = TRUE)
@@ -77,7 +79,9 @@ merge_group <- function(files, group_name, save_dir = ".", verbose = FALSE, ...)
 #' @export
 #'
 #' @examples
+#' \donttest{
 #' auto_group_files(c("AAPL_1.csv", "AAPL_2.csv", "AMZN_1.csv", "AMZN_2.csv"))
+#' }
 auto_group_files <- function(files) {
   names <- basename(files)
   files_split <- stringr::str_match(names, "^(.*)[_-].*")
@@ -104,7 +108,9 @@ auto_group_files <- function(files) {
 #' @export
 #'
 #' @examples
+#' \donttest{
 #' group_files(c("PreciosApple2016.csv", "AAPL2017.csv", "StockApple2018.csv"), "AAPL")
+#' }
 group_files <- function(files, name) {
   dplyr::tibble(file = basename(files), dataset = name, filepath = files) %>%
     dplyr::group_by(dataset)
@@ -124,8 +130,10 @@ group_files <- function(files, name) {
 #' @export
 #'
 #' @examples
+#' \donttest{
 #' grouped <- auto_group_files(c("AAPL_1.csv", "AAPL_2.csv"))
 #' merge_files_by_group(grouped, "processed")
+#' }
 merge_files_by_group <- function(grouped, save_dir, save_summary = FALSE, log = FALSE, info = FALSE, verbose = FALSE, ...) {
   merged <- grouped %>%
     dplyr::do(merge_group(.$filepath,

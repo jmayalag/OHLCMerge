@@ -16,5 +16,9 @@ data.frame with periodicity
 Get periodicity in data.frame
 }
 \examples{
-periodicity_df(AAPL)
+require(xts)
+data(sample_matrix)
+x <- as.xts(sample_matrix)
+
+periodicity_df(x)
 }

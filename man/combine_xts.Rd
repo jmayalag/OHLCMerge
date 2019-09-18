@@ -22,7 +22,10 @@ Ambos xts combinados
 Union los xts y retorna un xts con indices unicos
 }
 \examples{
-a <- index(AAPL[1:3, ])
-b <- index(AAPL[3:5, ])
+require(xts)
+data(sample_matrix)
+x <- as.xts(sample_matrix)
+a <- head(x)
+b <- tail(x)
 combine_xts(a, b)
 }

@@ -7,7 +7,7 @@
 export_csv(data, file)
 }
 \arguments{
-\item{data}{el dataset}
+\item{data}{el dataset, puede ser un xts o data.frame}
 
 \item{file}{path del archivo a exportar}
 }
@@ -18,5 +18,8 @@ el archivo csv
 Exporta el dataset a un archivo csv
 }
 \examples{
-export_csv(DJI)
+require(xts)
+data(sample_matrix)
+x <- as.xts(sample_matrix)
+export_csv(x, "sample.csv")
 }

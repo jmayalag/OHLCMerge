@@ -24,6 +24,8 @@ tabla con el resumen de los archivos guardados
 Mezcla y guarda archivos agrupados.
 }
 \examples{
+\donttest{
 files <- dir("data")
 merge_group(files, "AAPL", "processed")
+}
 }

@@ -1,4 +1,4 @@
-#' Check if two periodicities are compatible
+#' Check if two periodicities data.frames are compatible
 #'
 #' @param first periodicity data.frame
 #' @param second other periodicity data.frame
@@ -7,7 +7,13 @@
 #' @export
 #'
 #' @examples
-#' compatible_periodicty(a, b)
+#' require(xts)
+#' data(sample_matrix)
+#' x <- as.xts(sample_matrix)
+#' a <- periodicity_df(head(x))
+#' b <- periodicity_df(tail(x))
+#'
+#' compatible_periodicity(a, b)
 compatible_periodicity <- function(first, second) {
   cols <- c("difftime", "frequency", "units", "scale", "label")
   equal <- first == second
@@ -24,7 +30,11 @@ compatible_periodicity <- function(first, second) {
 #' @export
 #'
 #' @examples
-#' periodicity_df(AAPL)
+#' require(xts)
+#' data(sample_matrix)
+#' x <- as.xts(sample_matrix)
+#'
+#' periodicity_df(x)
 periodicity_df <- function(x) {
   p <- xts::periodicity(x)
   do.call(data.frame, c(p, stringsAsFactors = F))
@@ -79,8 +89,11 @@ intersect.POSIXct <- function(first, second) {
 #' @export
 #'
 #' @examples
-#' a <- index(AAPL[1:3, ])
-#' b <- index(AAPL[3:5, ])
+#' require(xts)
+#' data(sample_matrix)
+#' x <- as.xts(sample_matrix)
+#' a <- head(x)
+#' b <- tail(x)
 #' combine_xts(a, b)
 combine_xts <- function(first, second, verbose = FALSE, update = FALSE) {
   f <- index(first)
@@ -121,7 +134,10 @@ combine_xts <- function(first, second, verbose = FALSE, update = FALSE) {
 #' @export
 #'
 #' @examples
-#' to_dataframe(DJI)
+#' require(xts)
+#' data(sample_matrix)
+#' x <- as.xts(sample_matrix)
+#' to_dataframe(x)
 to_dataframe <- function(data, date_format = "%Y-%m-%d", time_format = "%H:%M:%S") {
   df <- data.frame(coredata(data), stringsAsFactors = F)
   index <- index(data)
@@ -139,7 +155,11 @@ to_dataframe <- function(data, date_format = "%Y-%m-%d", time_format = "%H:%M:%S
 #' @export
 #'
 #' @examples
-#' print(format_periodicity(x))
+#' require(xts)
+#' data(sample_matrix)
+#' x <- as.xts(sample_matrix)
+#'
+#' print(format_periodicity(periodicity(x)))
 format_periodicity <- function(x, ...) {
   x.freq <- ifelse(x$scale %in% c("minute", "seconds"), x$frequency,
     ""

@@ -18,5 +18,9 @@ a character vector
 Returns a formatted string of periodicity
 }
 \examples{
-print(format_periodicity(x))
+require(xts)
+data(sample_matrix)
+x <- as.xts(sample_matrix)
+
+print(format_periodicity(periodicity(x)))
 }

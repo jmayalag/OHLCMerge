@@ -29,6 +29,8 @@ el reporte de los resultados
 Mezcla archivos en cada grupo y guarda el csv final.
 }
 \examples{
+\donttest{
 grouped <- auto_group_files(c("AAPL_1.csv", "AAPL_2.csv"))
 merge_files_by_group(grouped, "processed")
+}
 }

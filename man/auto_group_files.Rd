@@ -18,5 +18,7 @@ Agrupa multiples datasets de acuerdo al nombre del archivo.
 Ejemplo: AAPL_1.csv, AAPL_2.csv, AAPL_3.csv agrupa a AAPL.csv
 }
 \examples{
+\donttest{
 auto_group_files(c("AAPL_1.csv", "AAPL_2.csv", "AMZN_1.csv", "AMZN_2.csv"))
+}
 }

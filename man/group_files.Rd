@@ -20,5 +20,7 @@ Agrupa archivos sin tener en cuenta el formato del nombre de archivo.
 Los archivos deben tener periodicidades iguales para poder ser mezclados.
 }
 \examples{
+\donttest{
 group_files(c("PreciosApple2016.csv", "AAPL2017.csv", "StockApple2018.csv"), "AAPL")
+}
 }

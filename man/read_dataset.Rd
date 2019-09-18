@@ -11,7 +11,9 @@ read_dataset(dataset, datadir, recursive = TRUE, verbose = FALSE)
 
 \item{datadir}{directorio en donde se encuentra el dataset}
 
-\item{recursive}{buscar recursivamente el dataset dentro del `datadir``}
+\item{recursive}{buscar recursivamente el dataset dentro del \code{datadir}}
+
+\item{verbose}{muestra mensajes de advertencia si es \code{TRUE}}
 }
 \value{
 el xts con los datos
@@ -20,6 +22,7 @@ el xts con los datos
 Obtiene un dataset del formato csv
 }
 \examples{
-## Not Run
+\donttest{
 read_dataset("US30D1", datadir = "~/Downloads/datos_ohlc")
+}
 }
