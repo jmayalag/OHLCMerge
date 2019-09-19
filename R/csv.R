@@ -42,7 +42,7 @@ as_posixct_compat <- function(x, try_formats="%Y-%m-%d", ...) {
 
       if (inherits(result, "error")) {
         err <- result
-      } else if (!is.null(result)) {
+      } else if (!is.null(result) && !is.na(result)) {
         return(result)
       }
     }
