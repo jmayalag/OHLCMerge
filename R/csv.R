@@ -13,6 +13,43 @@ valid_csv <- function(filename) {
   valid
 }
 
+#' as.POSIXct ompatibility function for R < 3.5
+#'
+#' @param x R object to be converted.
+#' @param try_formats vector of date formats.
+#' @param ... additional arguments for as.POSIXct.
+#'
+#' @return a POSIXct object.
+#' @export
+#'
+#' @examples
+#' as_posixct_compat("2019-01-01")
+as_posixct_compat <- function(x, try_formats="%Y-%m-%d", ...) {
+  if (uses_try_formats()) {
+    as.POSIXct(x = x, tryFormats = try_formats, ...)
+  } else {
+    err <- NULL
+
+    for (format in try_formats) {
+      result <- tryCatch(as.POSIXct(x = x, format = format, ...), error = function(e) {
+        if (grepl("unambiguous", e$message, fixed = TRUE)) {
+          e
+        }
+        else {
+          stop(e)
+        }
+      })
+
+      if (inherits(result, "error")) {
+        err <- result
+      } else if (!is.null(result)) {
+        return(result)
+      }
+    }
+    stop(err)
+  }
+}
+
 #' Read OHLCV csv
 #'
 #' First column must be the date, and the second must be the time component (optional)
@@ -58,13 +95,14 @@ read_ohlcv <- function(filename,
 
   if (is.character(dt$V2)) {
     # Has time column
-    dt[, V1 := as.POSIXct(paste(V1, V2), tryFormats = datetime_format[, 1], tz = "UTC")]
+    dt[, V1 := as_posixct_compat(paste(V1, V2), try_formats = datetime_format[, 1], tz = "UTC")]
+
     dt[, V2 := NULL]
     if (loginf) {
       message("Has time column")
     }
   } else {
-    dt[, V1 := as.POSIXct(V1, tryFormats = date_format, tz = "UTC")]
+    dt[, V1 := as_posixct_compat(V1, try_formats = date_format, tz = "UTC")]
   }
 
   x <- data.table::as.xts.data.table(dt)
@@ -147,4 +185,22 @@ load_dataset <- function(dataset, datadir, envir = .GlobalEnv, recursive = TRUE)
   assign(dataset, data, envir = envir)
 
   dataset
+}
+
+
+#' Checks if this version of R has `try_formats` as a parameter
+#'
+#' @return TRUE if R >= 3.5
+#' @export
+#'
+#' @examples
+#' uses_try_formats()
+uses_try_formats <- function() {
+  major <- as.numeric(version$major)
+  minor <- version$minor
+  splt <- stringr::str_split_fixed(minor, "\\.", 2)
+  minor <- as.numeric(splt[1])
+  patch <- as.numeric(splt[2])
+
+  major > 3 || minor >= 5
 }

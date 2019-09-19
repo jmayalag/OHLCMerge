@@ -28,3 +28,27 @@ test_that("read_ohlcv should fail to read the csv with '%Y-%m-%d' date format", 
   csv_file <- filepath()
   expect_error(read_ohlcv(csv_file, date_format = c("%Y-%m-%d")), "character string is not in a standard unambiguous format")
 })
+
+test_that("as_posixct_compat should work with a character vector of datetime formats (R >= 3.5)", {
+  if (!uses_try_formats()) return()
+  formats <- c("%Y-%m-%d", "%Y.%m.%d")
+  expected <- as.POSIXct("2019-01-01")
+
+  d <- as_posixct_compat("2019-01-01", try_formats = formats)
+  expect_equal(d, expected)
+
+  d <- as_posixct_compat("2019.01.01", try_formats = formats)
+  expect_equal(d, expected)
+})
+
+test_that("as_posixct_compat should work with a character vector of datetime formats (R < 3.5)", {
+  if (uses_try_formats()) return()
+  formats <- c("%Y-%m-%d", "%Y.%m.%d")
+  expected <- as.POSIXct("2019-01-01")
+
+  d <- as_posixct_compat("2019-01-01", try_formats = formats)
+  expect_equal(d, expected)
+
+  d <- as_posixct_compat("2019.01.01", try_formats = formats)
+  expect_equal(d, expected)
+})
