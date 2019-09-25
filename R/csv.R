@@ -24,7 +24,7 @@ valid_csv <- function(filename) {
 #'
 #' @examples
 #' as_posixct_compat("2019-01-01")
-as_posixct_compat <- function(x, try_formats="%Y-%m-%d", ...) {
+as_posixct_compat <- function(x, try_formats = "%Y-%m-%d", ...) {
   if (uses_try_formats()) {
     as.POSIXct(x = x, tryFormats = try_formats, ...)
   } else {
@@ -55,21 +55,21 @@ as_posixct_compat <- function(x, try_formats="%Y-%m-%d", ...) {
 #' First column must be the date, and the second must be the time component (optional)
 #'
 #' @param filename path to file
-#' @param date_format date format
-#' @param time_format time format
-#' @param log should log which file is read?
-#' @param info show additional info about file
+#' @param orders a character vector of date-time formats. See \link[lubridate]{parse_date_time}.
+#' @param log should log which file is read.
+#' @param info show additional info about file.
+#' @param exact use exact parsing. See \link[lubridate]{parse_date_time}.
 #'
 #' @return a xts
 #' @export
 #'
 #' @examples
 #' \donttest{
-#' read_ohlc("ohlc.csv")
+#' read_ohlcv("ohlc.csv")
 #' }
 read_ohlcv <- function(filename,
-                       date_format = c("%Y-%m-%d", "%Y.%m.%d"),
-                       time_format = "%H:%M",
+                       orders = c("ymd HMS", "ymd HM"),
+                       exact = FALSE,
                        log = FALSE,
                        info = FALSE) {
   if (log) {
@@ -90,22 +90,31 @@ read_ohlcv <- function(filename,
     message("Headers found")
   }
 
-  dt <- data.table::fread(filename, header = FALSE, skip = skip)
-  datetime_format <- expand.grid(date_format, time_format) %>% tidyr::unite("f", sep = " ")
+  dt <- data.table::fread(filename, header = FALSE, skip = skip, fill = TRUE)
 
   if (is.character(dt$V2)) {
     # Has time column
-    dt[, V1 := as_posixct_compat(paste(V1, V2), try_formats = datetime_format[, 1], tz = "UTC")]
+    dt[, V1 := paste(V1, V2)]
 
     dt[, V2 := NULL]
     if (loginf) {
       message("Has time column")
     }
   } else {
-    dt[, V1 := as_posixct_compat(V1, try_formats = date_format, tz = "UTC")]
+    dt[, V1 := paste0(V1, " 00:00")]
+  }
+  dt[, V1 := lubridate::parse_date_time(V1, orders = orders, exact = exact, quiet = TRUE)]
+
+  valid_rows <- complete.cases(dt)
+  valid <- dt[valid_rows]
+  invalid <- dt[!valid_rows]
+
+  if (nrow(invalid) > 0) {
+    message(paste("Failed to read", nrow(invalid), "from", filename, "Orders:", paste0(orders, collapse = ", ")))
+    message(paste0("Invalid rows: ", paste0(which(!valid_rows))))
   }
 
-  x <- data.table::as.xts.data.table(dt)
+  x <- data.table::as.xts.data.table(valid)
   colnames(x) <- c("Open", "High", "Low", "Close", "Volume")
 
   if (loginf) {
@@ -141,6 +150,7 @@ export_csv <- function(data, file) {
 #' @param datadir directorio en donde se encuentra el dataset
 #' @param recursive buscar recursivamente el dataset dentro del `datadir`
 #' @param verbose muestra mensajes de advertencia si es `TRUE`
+#' @param ... parametros adicionales para \link[OHLCMerge]{read_ohlcv}
 #'
 #' @return el xts con los datos
 #' @export
@@ -149,7 +159,7 @@ export_csv <- function(data, file) {
 #' \donttest{
 #' read_dataset("US30D1", datadir = "~/Downloads/datos_ohlc")
 #' }
-read_dataset <- function(dataset, datadir, recursive = TRUE, verbose = FALSE) {
+read_dataset <- function(dataset, datadir, recursive = TRUE, verbose = FALSE, ...) {
   extension <- ".csv"
   filename <- paste0(dataset, extension)
   files <- list.files(datadir, pattern = filename, recursive = recursive, full.names = TRUE)
@@ -163,7 +173,7 @@ read_dataset <- function(dataset, datadir, recursive = TRUE, verbose = FALSE) {
     }
     message("Loading ", file)
   }
-  read_ohlcv(file)
+  read_ohlcv(file, ...)
 }
 
 #' Carga el dataset en el entorno global
@@ -172,6 +182,7 @@ read_dataset <- function(dataset, datadir, recursive = TRUE, verbose = FALSE) {
 #' @param datadir directorio en donde se encuentra el dataset
 #' @param envir entorno donde asignar la variable
 #' @param recursive buscar recursivamente el dataset dentro del `datadir``
+#' @param ... parametros adicionales para \link[OHLCMerge]{read_ohlcv}
 #'
 #' @return el nombre de la variable a la que se asigno el dataset
 #' @export
@@ -180,8 +191,8 @@ read_dataset <- function(dataset, datadir, recursive = TRUE, verbose = FALSE) {
 #' \donttest{
 #' load_dataset("US30D1", datadir = "~/Downloads/datos_ohlc")
 #' }
-load_dataset <- function(dataset, datadir, envir = .GlobalEnv, recursive = TRUE) {
-  data <- read_dataset(dataset, datadir, recursive = recursive)
+load_dataset <- function(dataset, datadir, envir = .GlobalEnv, recursive = TRUE, ...) {
+  data <- read_dataset(dataset, datadir, recursive = recursive, ...)
   assign(dataset, data, envir = envir)
 
   dataset

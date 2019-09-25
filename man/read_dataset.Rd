@@ -4,7 +4,7 @@
 \alias{read_dataset}
 \title{Obtiene un dataset del formato csv}
 \usage{
-read_dataset(dataset, datadir, recursive = TRUE, verbose = FALSE)
+read_dataset(dataset, datadir, recursive = TRUE, verbose = FALSE, ...)
 }
 \arguments{
 \item{dataset}{nombre del dataset}
@@ -14,6 +14,8 @@ read_dataset(dataset, datadir, recursive = TRUE, verbose = FALSE)
 \item{recursive}{buscar recursivamente el dataset dentro del \code{datadir}}
 
 \item{verbose}{muestra mensajes de advertencia si es \code{TRUE}}
+
+\item{...}{parametros adicionales para \link[OHLCMerge]{read_ohlcv}}
 }
 \value{
 el xts con los datos

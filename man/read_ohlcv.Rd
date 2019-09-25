@@ -4,19 +4,19 @@
 \alias{read_ohlcv}
 \title{Read OHLCV csv}
 \usage{
-read_ohlcv(filename, date_format = c("\%Y-\%m-\%d", "\%Y.\%m.\%d"),
-  time_format = "\%H:\%M", log = FALSE, info = FALSE)
+read_ohlcv(filename, orders = c("ymd HMS", "ymd HM"), exact = FALSE,
+  log = FALSE, info = FALSE)
 }
 \arguments{
 \item{filename}{path to file}
 
-\item{date_format}{date format}
+\item{orders}{a character vector of date-time formats. See \link[lubridate]{parse_date_time}.}
 
-\item{time_format}{time format}
+\item{exact}{use exact parsing. See \link[lubridate]{parse_date_time}.}
 
-\item{log}{should log which file is read?}
+\item{log}{should log which file is read.}
 
-\item{info}{show additional info about file}
+\item{info}{show additional info about file.}
 }
 \value{
 a xts
@@ -26,6 +26,6 @@ First column must be the date, and the second must be the time component (option
 }
 \examples{
 \donttest{
-read_ohlc("ohlc.csv")
+read_ohlcv("ohlc.csv")
 }
 }

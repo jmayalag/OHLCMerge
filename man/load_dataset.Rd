@@ -4,7 +4,8 @@
 \alias{load_dataset}
 \title{Carga el dataset en el entorno global}
 \usage{
-load_dataset(dataset, datadir, envir = .GlobalEnv, recursive = TRUE)
+load_dataset(dataset, datadir, envir = .GlobalEnv, recursive = TRUE,
+  ...)
 }
 \arguments{
 \item{dataset}{nombre del dataset}
@@ -14,6 +15,8 @@ load_dataset(dataset, datadir, envir = .GlobalEnv, recursive = TRUE)
 \item{envir}{entorno donde asignar la variable}
 
 \item{recursive}{buscar recursivamente el dataset dentro del `datadir``}
+
+\item{...}{parametros adicionales para \link[OHLCMerge]{read_ohlcv}}
 }
 \value{
 el nombre de la variable a la que se asigno el dataset
