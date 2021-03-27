@@ -10,7 +10,7 @@
 #'
 #' @examples
 #' \donttest{
-#' files <- dir("data")
+#' files <- dir("data", full.names=T)
 #' merge_group(files, "AAPL", "processed")
 #' }
 merge_group <- function(files, group_name, save_dir = ".", verbose = FALSE, ...) {
@@ -133,15 +133,15 @@ group_files <- function(files, name) {
 merge_files_by_group <- function(grouped, save_dir, save_summary = FALSE, log = FALSE, info = FALSE, verbose = FALSE, ...) {
   merged <- grouped %>%
     dplyr::do(merge_group(.$filepath,
-      .$dataset[1],
-      save_dir = save_dir,
-      log = log, info = info, verbose = verbose,
-      ...
+                          .$dataset[1],
+                          save_dir = save_dir,
+                          log = log, info = info, verbose = verbose,
+                          ...
     ))
 
   suppressWarnings(summary <- merged %>%
-    dplyr::select(dataset, files_merged, observations, periodicity, p) %>%
-    tidyr::unnest(p))
+                     dplyr::select(dataset, files_merged, observations, periodicity, p) %>%
+                     tidyr::unnest(p))
 
   if (save_summary) {
     export_csv(summary, file.path(save_dir, "summary.csv"))

@@ -1,13 +1,14 @@
 library(OHLCMerge)
 library(dplyr)
 library(tidyr)
+library(purrr)
 
-dirpath <- "~/Downloads/audjpym15"
-save_dir <- file.path("~/Downloads/ohlcmerge_demo")
-
-files <- dir(dirpath, pattern = "*.csv", full.names = TRUE)
+save_dir <- file.path("example_merged")
+files <- dir(system.file("extdata", "", package="OHLCMerge"), full.names = T)
 
 grouped <- auto_group_files(files)
+
+grouped
 
 summary <- merge_files_by_group(grouped, save_dir)
 
